@@ -1,6 +1,27 @@
-# MAX-shield Security Bot
+<div align="center">
 
-MAX-shield - это бот безопасности, который помогает защитить пользователей от вредоносных ссылок и файлов, проверяя их с помощью сервисов обнаружения угроз Kaspersky.
+# MAX Shield
+
+**Бот безопасности для чатов мессенджера MAX**
+
+[![Node.js](https://img.shields.io/badge/Node.js-20%2B-339933?logo=node.js&logoColor=white)](package.json)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169e1?logo=postgresql&logoColor=white)](docker-compose.yml)
+[![RabbitMQ](https://img.shields.io/badge/RabbitMQ-queue-ff6600?logo=rabbitmq&logoColor=white)](docker-compose.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-2ea44f.svg)](LICENSE)
+
+</div>
+
+MAX Shield помогает защищать личные и групповые чаты от вредоносных ссылок
+и файлов. Бот принимает события мессенджера, отправляет проверки в очередь,
+получает вердикт Kaspersky OpenTIP и возвращает понятное предупреждение прямо
+в беседу.
+
+## Как устроено
+
+`MAX → bot service → RabbitMQ → worker → Kaspersky OpenTIP`
+
+Результаты и история проверок сохраняются в PostgreSQL, а обработка угроз
+вынесена из входящего потока сообщений, поэтому бот остаётся отзывчивым.
 
 ## Возможности
 
