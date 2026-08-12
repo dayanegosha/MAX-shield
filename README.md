@@ -1,5 +1,8 @@
 # MAXimum Security Bot
 
+> **Development continues in [MAX Shield](https://github.com/dayanegosha/MAX-shield).**
+> This shared repository is preserved as a collaboration and history snapshot.
+
 MAXimum - это бот безопасности, который помогает защитить пользователей от вредоносных ссылок и файлов, проверяя их с помощью сервисов обнаружения угроз Kaspersky.
 
 ## Возможности
