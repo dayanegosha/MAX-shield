@@ -62,7 +62,7 @@ KASPERSKY_TIMEOUT_MS=3000
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone <адрес-репозитория>
+   git clone https://github.com/dayanegosha/MAX-shield.git
    cd MAX-shield
    ```
 
