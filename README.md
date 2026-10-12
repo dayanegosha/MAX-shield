@@ -9,7 +9,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-20%2B-339933?logo=node.js&logoColor=white)](package.json)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169e1?logo=postgresql&logoColor=white)](docker-compose.yml)
 [![RabbitMQ](https://img.shields.io/badge/RabbitMQ-queue-ff6600?logo=rabbitmq&logoColor=white)](docker-compose.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-2ea44f.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-2ea44f.svg)](LICENSE)
 
 </div>
 
