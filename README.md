@@ -1,12 +1,12 @@
 # .max shield
 
-Бот для проверки ссылок и файлов в чатах мессенджера MAX.
+бот для проверки ссылок и файлов в чатах мессенджера MAX.
 
-Бот получает сообщения, отправляет найденные ссылки и файлы в очередь, проверяет их через Kaspersky OpenTIP и возвращает результат в чат. История проверок хранится в PostgreSQL, фоновые задачи обрабатывает RabbitMQ.
+бот получает сообщения, отправляет найденные ссылки и файлы в очередь, проверяет их через Kaspersky OpenTIP и возвращает результат в чат. история проверок хранится в PostgreSQL, фоновые задачи обрабатывает RabbitMQ.
 
 ## запуск
 
-Нужны Docker и Docker Compose. Создайте `.env` в корне проекта:
+нужны Docker и Docker Compose. создайте `.env` в корне проекта:
 
 ```env
 BOT_TOKEN=token
@@ -15,15 +15,15 @@ KASPERSKY_URL_API=https://opentip.kaspersky.com/api/v1/search/url
 KASPERSKY_TIMEOUT_MS=3000
 ```
 
-PostgreSQL, RabbitMQ и очередь проверок настроены в `docker-compose.yml`. Запустите сервисы:
+PostgreSQL, RabbitMQ и очередь проверок настроены в `docker-compose.yml`. запустите сервисы:
 
 ```sh
 docker compose up --build
 ```
 
-Для остановки используйте `docker compose down`, для просмотра логов — `docker compose logs -f`.
+для остановки используйте `docker compose down`, для просмотра логов — `docker compose logs -f`.
 
-Основные части проекта находятся в `src/bot`, `src/worker`, `src/services` и `src/db`.
+основные части проекта находятся в `src/bot`, `src/worker`, `src/services` и `src/db`.
 
 ## лицензия
 
