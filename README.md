@@ -10,15 +10,12 @@
 
 ```env
 BOT_TOKEN=token
-DATABASE_URL=postgres://user:password@postgres:5432/maxshield
-AMQP_URL=amqp://user:password@rabbit:5672
-QUEUE_NAME=check
 KASPERSKY_API_KEY=key
-KASPERSKY_URL_API=https://opentip.kaspersky.com/api/v1/search/domain
+KASPERSKY_URL_API=https://opentip.kaspersky.com/api/v1/search/url
 KASPERSKY_TIMEOUT_MS=3000
 ```
 
-Затем запустите сервисы:
+PostgreSQL, RabbitMQ и очередь проверок настроены в `docker-compose.yml`. Запустите сервисы:
 
 ```sh
 docker compose up --build

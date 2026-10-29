@@ -1,5 +1,3 @@
-// src/utils/extractUrls.js
-
 export function extractUrls(body) {
   if (!body || typeof body !== "object") return [];
 
@@ -12,7 +10,6 @@ export function extractUrls(body) {
   for (const att of attachments) {
     if (!att || typeof att !== "object") continue;
 
-    // файлы
     if (att.type === "file" && att.payload) {
       const fileId =
         att.payload.id ??
@@ -36,7 +33,6 @@ export function extractUrls(body) {
       }
     }
 
-    // ссылки через attachment (на всякий случай)
     if (att.type === "link" && att.payload?.url) {
       urls.push({
         type: "link",
@@ -45,7 +41,6 @@ export function extractUrls(body) {
     }
   }
 
-  // --- 2. текстовые ссылки ---
   const text =
     typeof body.text === "string"
       ? body.text

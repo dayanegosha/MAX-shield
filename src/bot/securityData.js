@@ -1,5 +1,3 @@
-// src/bot/securityData.js
-
 export const advices = [
   "Используйте минимум 12 символов в пароле.",
   "Включайте 2FA везде, где возможно.",

@@ -1,6 +1,5 @@
 import { query } from './index.js';
 
-// Основные операции с URL
 export async function findUrl(url) {
   const { rows } = await query('SELECT * FROM url WHERE url=$1', [url]);
   return rows[0] || null;
@@ -33,7 +32,6 @@ export async function processUrl(url, type) {
   return existing;
 }
 
-// Операции с пользователями и URL
 export async function handleUserUrl(maxUserId, urlId) {
   const { rows } = await query(
     "SELECT * FROM user_url WHERE max_user_id=$1 AND url_id=$2",
@@ -57,7 +55,6 @@ export async function handleUserUrl(maxUserId, urlId) {
   }
 }
 
-// Запросы для анализа безопасности пользователей
 export async function getUserDangerousStats(userId) {
   const { rows } = await query(
     `SELECT SUM(uu.number) as total_dangerous

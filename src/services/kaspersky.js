@@ -8,9 +8,6 @@ const URL_API =
 const API_KEY = process.env.KASPERSKY_API_KEY;
 const TIMEOUT_MS = Number(process.env.KASPERSKY_TIMEOUT_MS || 20000);
 
-/**
- * Простейшая обёртка над fetch с таймаутом.
- */
 async function fetchWithTimeout(url, options = {}, timeoutMs = TIMEOUT_MS) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
@@ -58,7 +55,6 @@ export async function checkUrlWithKaspersky(url) {
       return { verdict: "unknown", zone: "Grey", raw: null };
     }
 
-    // в ответе есть поле Zone: Green / Yellow / Red / Grey и т.д.
     const zone = String(data.Zone || "Grey");
 
     let verdict;
@@ -115,19 +111,15 @@ async function pollFileResult(fileHash, maxAttempts = 5, delayMs = 5000) {
 
     const status = String(data.Status || "").toUpperCase();
 
-    // DONE / FINISHED / ERROR — считаем конечным состоянием
     if (status === "DONE" || status === "FINISHED" || status === "ERROR") {
       return data;
     }
 
-    // ещё в очереди — подождём и попробуем снова
     await new Promise((r) => setTimeout(r, delayMs));
   }
 
-  // не дождались результата
   return null;
 }
-
 
 /**
  * Проверка файла через Kaspersky OpenTIP.
@@ -140,7 +132,6 @@ export async function checkFileWithKaspersky(fileBuffer, filename) {
     return { verdict: "unknown", zone: "Grey", raw: null };
   }
 
-  // 1) Submit file for analysis
   const scanEndpoint = `https://opentip.kaspersky.com/api/v1/scan/file?filename=${encodeURIComponent(filename)}`;
   
   try {
@@ -165,18 +156,16 @@ export async function checkFileWithKaspersky(fileBuffer, filename) {
       return { verdict: "unknown", zone: "Grey", raw: null };
     }
 
-    // Get the file hash (SHA256) from the scan response
     const fileHash = scanData.Sha256 || scanData.Sha1 || scanData.Md5;
     if (!fileHash) {
       console.warn("[kaspersky] cannot get file hash from scan response");
       return { verdict: "unknown", zone: "Grey", raw: scanData };
     }
 
-    // 2) Многократный опрос результата
     const resultData = await pollFileResult(fileHash);
 
     if (!resultData) {
-      // Не смогли получить результат — хотя бы нормализуем по scanData
+      // Если опрос не дал результата, используем ответ на загрузку файла.
       return normalizeFileVerdict(scanData);
     }
 
@@ -192,11 +181,7 @@ export async function checkFileWithKaspersky(fileBuffer, filename) {
   }
 }
 
-/**
- * Нормализация ответа от Kaspersky для файлов
- */
 function normalizeFileVerdict(data) {
-  // в ответе есть поле Zone: Green / Yellow / Red / Grey и т.д.
   const zone = String(data.Zone || "Grey");
 
   let verdict;

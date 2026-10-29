@@ -1,4 +1,3 @@
-// src/worker/index.js
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -6,7 +5,6 @@ import amqplib from "amqplib";
 import { Bot } from "@maxhub/max-bot-api";
 import { findUrl, ensureUrl, saveUrlResult } from "../db/queries.js";
 import { checkUrlWithKaspersky, checkFileWithKaspersky } from "../services/kaspersky.js";
-
 
 const QUEUE_NAME = process.env.QUEUE_NAME || "check";
 const AMQP_URL = process.env.AMQP_URL;
@@ -35,7 +33,7 @@ async function sendReply(chat, message_id, text) {
       ? { link: { type: "reply", mid: message_id } }
       : undefined;
 
-    const chatId = chat.chat_id;  // <-- ВАЖНО
+    const chatId = chat.chat_id;
 
     await botInstance.api.sendMessageToChat(chatId, text, replyLink);
   } catch (e) {
@@ -43,22 +41,16 @@ async function sendReply(chat, message_id, text) {
   }
 }
 
-
 async function checkLink(url) {
-  // теперь проверяем ссылку через Kaspersky OpenTIP
   const res = await checkUrlWithKaspersky(url);
-  // res: { verdict, zone, raw }
 
-  // Можем чуть логировать, чтобы видеть, что реально происходит:
   console.log("[worker] Kaspersky URL verdict:", url, "=>", res.verdict, `(${res.zone})`);
 
-  return res; // важно: есть .verdict
+  return res;
 }
-
 
 async function checkFile(fileId, fileToken) {
   try {
-    // 1) Скачиваем файл из MAX
     const botInstance = await getBot();
     const fileData = await botInstance.api.downloadFileByToken(fileToken);
 
@@ -67,7 +59,6 @@ async function checkFile(fileId, fileToken) {
       return { verdict: "unknown" };
     }
 
-    // 2) Приводим к Buffer
     let fileBuffer;
 
     if (Buffer.isBuffer(fileData)) {
@@ -82,8 +73,8 @@ async function checkFile(fileId, fileToken) {
       return { verdict: "unknown" };
     }
 
-    // 3) Проверяем файл в Kaspersky
-    const filename = `file_${fileId}`; // можно улучшить позже, если появится реальное имя
+    // В очереди нет исходного имени файла.
+    const filename = `file_${fileId}`;
     const res = await checkFileWithKaspersky(fileBuffer, filename);
 
     console.log(
@@ -101,45 +92,38 @@ async function checkFile(fileId, fileToken) {
   }
 }
 
-
 async function processTask(payload) {
   const { message_id, url, type, chat, file_id, file_token } = payload || {};
 
-  // 1) Валидация payload
   if (!message_id || !url || !type || !chat?.chat_id) {
     console.warn("[worker] skip bad payload:", payload);
     return;
   }
 
-    // Дополнительно: для файлов обязателен file_token
   if (type === "file" && !file_token) {
     console.warn("[worker] file task without file_token:", payload);
     return;
   }
 
-  // 2) Получаем/создаём запись в url
   let row = await findUrl(url);
   if (!row) {
     row = await ensureUrl(url, type);
   }
 
-  // 3) Берём готовый verdict, если уже есть
   let verdict = row.result;
 
   if (!verdict) {
-    // 4) Если нет — проверяем
     let res;
     if (type === "file") {
-      res = await checkFile(file_id, file_token);   // теперь реальная проверка файла
+      res = await checkFile(file_id, file_token);
     } else {
-      res = await checkLink(url);                   // тут уже Kaspersky
+      res = await checkLink(url);
     }
 
     verdict = String(res?.verdict ?? "unknown");
     await saveUrlResult(row.url_id, verdict);
   }
 
-  // 5) Формируем текст ответа
   const text =
     type === "file"
       ? `Файл проверен.\nСтатус: ${verdict}`
@@ -148,8 +132,6 @@ async function processTask(payload) {
   await sendReply(chat, message_id, text);
   console.log("[worker] processed task:", url, "verdict:", verdict);
 }
-
-
 
 async function main() {
   if (!AMQP_URL) {
